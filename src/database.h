@@ -1,5 +1,5 @@
 #define ENTITY
-
+#include <stdio.h>
 
 //////////////////////////////////////////////////////
 ENTITY *select(FILE *db, int id);
