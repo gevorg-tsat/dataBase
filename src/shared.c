@@ -16,6 +16,7 @@ int select(int id, int table, int amount) {
                 return 1;
             }
             print_module(temp);
+            free(temp);
         }
         else
             print_all_module(file, amount);
@@ -31,6 +32,7 @@ int select(int id, int table, int amount) {
                 return 1;
             }
             print_level(temp);
+            free(temp);
         }
         else
             print_all_levels(file, amount);
@@ -46,6 +48,7 @@ int select(int id, int table, int amount) {
                 return 1;
             }
             print_event(temp);
+            free(temp);
         }
         else
             print_all_events(file, amount);
