@@ -2,6 +2,7 @@
 
 
 int delete_from_modules(FILE *db, int id) {
+    fseek(db, 0, SEEK_END);
     long int n = ftell(db)/(sizeof(module));
     long int count = 0;
     fseek(db, 0, SEEK_SET);

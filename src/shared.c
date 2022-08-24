@@ -168,6 +168,17 @@ int delete(int table, int id) {
     }
 }
 
+// 5. Get all active additional modules (last module status is 1)
+// 6. Delete modules by ids
+// 7. Set protected mode for module by id
+// 8. Move module by id to specified memory level and cell
+// 9. Set protection flag of the specified memory level
 
-
+void bunt() {
+    FILE *file = fopen("../materials/master_module.db", "rb+");
+    fseek(file, 0, SEEK_END);
+    long int n = ftell(file)/(sizeof(module));
+    fseek(file, 0, SEEK_SET);
+    
+}
 

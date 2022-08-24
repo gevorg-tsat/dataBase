@@ -1,6 +1,7 @@
 #include "status_events.h"
 
 int delete_from_events(FILE *db, int id) {
+    fseek(db, 0, SEEK_END);
     long int n = ftell(db)/(sizeof(status_events);
     long int count = 0;
     fseek(db, 0, SEEK_SET);
