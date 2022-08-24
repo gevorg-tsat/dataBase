@@ -14,3 +14,4 @@ int insert_into_levels(FILE *db, level *entity);
 
 print_level(level temp);
 print_all_levels(FILE *file, int amount);
+int input_level(level *data);

@@ -13,3 +13,4 @@ int delete_from_modules(FILE *db, int id);
 int update_module(FILE *db, int id, module *entity);
 int insert_into_module(FILE *db, module *entity);
 void print_module(module data);
+int input_module(module *data);

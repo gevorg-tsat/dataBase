@@ -73,3 +73,7 @@ void print_module(module data) {
 void print_all_module(FILE *file, int amount) {
 
 }
+
+int input_module(module *data) {
+
+}
