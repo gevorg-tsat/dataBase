@@ -1,3 +1,6 @@
+#ifndef SRC_LEVELS_H_
+#define SRC_LEVELS_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,3 +18,5 @@ int insert_into_levels(FILE *db, level *entity);
 void print_level(level temp);
 void print_all_levels(FILE *db, int amount);
 int input_level(level *data);
+
+#endif  // SRC_LEVELS_H_

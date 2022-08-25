@@ -1,6 +1,9 @@
+#ifndef SRC_STATUS_EVENTS_H_
+#define SRC_STATUS_EVENTS_H_
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "module.h"
 typedef struct status_events {
     int event;
     int module;
@@ -16,3 +19,5 @@ int insert_into_events(FILE *db, status_events *entity);
 void print_event(status_events temp);
 void print_all_events(FILE *db, int amount);
 int input_event(status_events *event);
+
+#endif  // SRC_STATUS_EVENTS_H_

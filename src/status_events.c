@@ -10,7 +10,7 @@ int delete_from_events(FILE *db, int id) {
         fseek(db, i*sizeof(status_events), SEEK_SET);
         fread(&door, sizeof(status_events), 1, db);
         if (door.event == id) {
-            for (long j = i; j < n - 1; j++) {
+            for (long j = i; j < n; j++) {
                 status_events door_temp;
                 fseek(db, (j+1)*sizeof(status_events), SEEK_SET);
                 fread(&door_temp, sizeof(status_events), 1, db);
@@ -23,6 +23,9 @@ int delete_from_events(FILE *db, int id) {
     }
     fseek(db, 0, SEEK_SET);
     ftruncate((fileno(db)), (n - count) * sizeof(status_events));
+    if (count == 0)
+        return 1;
+    return 0;
 }
 
 status_events *select_from_events(FILE *db, int id) {
@@ -59,6 +62,7 @@ int insert_into_events(FILE *db, status_events *entity) {
     long int size = ftell(db) / sizeof(status_events);
     fseek(db, size*sizeof(status_events), SEEK_SET);
     fwrite(entity, sizeof(status_events), 1, db);
+    return 0;
 }
 
 void print_event(status_events temp) {
@@ -77,7 +81,22 @@ void print_all_events(FILE *db, int amount) {
     }
 }
 int input_event(status_events *event) {
-    if (scanf("%d%d%d %s %s", &(event->event), &(event->module), &(event->new_status), &(event->change_date), &(event->change_time)) != 5)
+    printf("input data about new event:\n");
+    printf("event_id module_id new_status date_of_change time_of_change\n");
+    if (scanf("%d%d%d %s %s", &(event->event), &(event->module), &(event->new_status), event->change_date, event->change_time) != 5)
         return 1;
+    FILE *file = fopen("../materials/master_modules.db", "rb");
+    module *temp = select_from_module(file, event -> module);
+    if (temp == NULL)
+        return 1;
+    free(temp);
+    fclose(file);
+    file = fopen("../materials/master_status_events.db", "rb");
+    status_events *temp1 = select_from_events(file, event -> event);
+    if (temp1 != NULL) {
+        free(temp1);
+        return 1;
+    }
+    fclose(file);
     return 0;
 }

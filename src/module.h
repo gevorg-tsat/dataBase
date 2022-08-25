@@ -1,6 +1,10 @@
+#ifndef SRC_MODULE_H_
+#define SRC_MODULE_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "levels.h"
 typedef struct module {
     int id;
     char name[30];
@@ -16,3 +20,5 @@ int insert_into_module(FILE *db, module *entity);
 void print_module(module data);
 void print_all_module(FILE *db, int amount);
 int input_module(module *data);
+
+#endif  // SRC_MODULE_H_

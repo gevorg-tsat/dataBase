@@ -55,6 +55,7 @@ int selectf(int id, int table, int amount) {
     default:
     break;
     }
+    return 0;
 }
 
 int update(int table, int id) {
@@ -71,7 +72,9 @@ int update(int table, int id) {
         //     print_module(temp);
         // }                                 MAKE UPDATE_ALL FEATURE
         module temp1;
-        input_module(&temp1);
+        if (input_module(&temp1)) {
+            return 1;
+        }
         num = update_module(file, id, &temp1);
         fclose(file);
         return num;
@@ -86,7 +89,8 @@ int update(int table, int id) {
         //     print_level(temp);
         // }
         level temp2;
-        input_level(&temp2);
+        if (input_level(&temp2))
+            return 1;
         num = update_level(file, id, &temp2);
         fclose(file);
         return num;
@@ -101,7 +105,8 @@ int update(int table, int id) {
         //     print_event(temp);
         // }
         status_events temp3;
-        input_event(&temp3);
+        if (input_event(&temp3))
+            return 1;
         num = update_events(file, id, &temp3);
         fclose(file);
         return num;
@@ -109,6 +114,7 @@ int update(int table, int id) {
     default:
     break;
     }
+    return 0;
 }
 
 int insert(int table) {
@@ -118,23 +124,26 @@ int insert(int table) {
     case 0:
         file = fopen("../materials/master_modules.db", "rb+");
         module temp1;
-        input_module(&temp1);
+        if (input_module(&temp1))
+            return 1;
         num = insert_into_module(file, &temp1);
         fclose(file);
         return num;
         break;
     case 1:
-        file = fopen("../materials/master_levels.db", "rb");
+        file = fopen("../materials/master_levels.db", "rb+");
         level temp2;
-        input_level(&temp2);
+        if (input_level(&temp2))
+            return 1;
         num = insert_into_levels(file, &temp2);
         fclose(file);
         return num;
         break;
     case 2:
-        file = fopen("../materials/master_status_events.db", "rb");
+        file = fopen("../materials/master_status_events.db", "rb+");
         status_events temp3;
-        input_event(&temp3);
+        if (input_event(&temp3))
+            return 1;
         num = insert_into_events(file, &temp3);
         fclose(file);
         return num;
@@ -142,6 +151,7 @@ int insert(int table) {
     default:
     break;
     }
+    return 0;
 }
 
 int delete(int table, int id) {
@@ -155,13 +165,13 @@ int delete(int table, int id) {
         return num;
         break;
     case 1:
-        file = fopen("../materials/master_levels.db", "rb");
+        file = fopen("../materials/master_levels.db", "rb+");
         num = delete_from_levels(file, id);
         fclose(file);
         return num;
         break;
     case 2:
-        file = fopen("../materials/master_status_events.db", "rb");
+        file = fopen("../materials/master_status_events.db", "rb+");
         num = delete_from_events(file, id);
         fclose(file);
         return num;
@@ -169,6 +179,7 @@ int delete(int table, int id) {
     default:
     break;
     }
+    return 0;
 }
 
 // 5. Get all active additional modules (last module status is 1)
@@ -392,10 +403,6 @@ int get_status(module mod) {
 
 
 int date_compare(status_events first, status_events second) {
-    if (first.module == 53) {
-        print_event(first);
-        print_event(second);
-    }
     struct date_time date1 = {
         .year = (first.change_date[6] - '0') * 1000 + (first.change_date[7] - '0') * 100 + (first.change_date[8] - '0') * 10 + (first.change_date[9] - '0') * 1,
         .month = (first.change_date[3] - '0') * 10 + (first.change_date[4] - '0'),

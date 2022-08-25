@@ -11,7 +11,7 @@ int delete_from_modules(FILE *db, int id) {
         fseek(db, i*sizeof(module), SEEK_SET);
         fread(&door, sizeof(module), 1, db);
         if (door.id == id) {
-            for (long j = i; j < n - 1; j++) {
+            for (long j = i; j < n; j++) {
                 module door_temp;
                 fseek(db, (j+1)*sizeof(module), SEEK_SET);
                 fread(&door_temp, sizeof(module), 1, db);
@@ -25,6 +25,9 @@ int delete_from_modules(FILE *db, int id) {
     }
     fseek(db, 0, SEEK_SET);
     ftruncate((fileno(db)), (n - count) * sizeof(module));
+    if (count == 0)
+        return 1;
+    return 0;
 }
 module *select_from_module(FILE *db, int id) {
     fseek(db, 0, SEEK_END);
@@ -61,6 +64,7 @@ int insert_into_module(FILE *db, module *entity) {
     long int size = ftell(db) / sizeof(module);
     fseek(db, size*sizeof(module), SEEK_SET);
     fwrite(entity, sizeof(module), 1, db);
+    return 0;
 }
 
 void print_module(module data) {
@@ -85,7 +89,25 @@ void print_all_module(FILE *db, int amount) {
 }
 
 int input_module(module *data) {
-    if (scanf("%d %s %d%d%d", &(data->id), &(data->name), &(data->level_number), &(data->level_number), &(data->del)) != 5)
+    printf("input data about new module:\n");
+    printf("id name level cell delete_flag \n");
+    if (scanf("%d %s %d%d%d", &(data->id), data->name, &(data->level_number), &(data->cell), &(data->del)) != 5)
         return 1;
+    FILE *file = fopen("../materials/master_modules.db", "rb");
+    module *temp = select_from_module(file, data -> id);
+    if (temp != NULL) {
+        free(temp);
+        fclose(file);
+        return 1;
+    }
+    fclose(file);
+    file = fopen("../materials/master_levels.db", "rb");
+    level *temp_lvl = select_from_levels(file, data -> level_number);
+    if (temp_lvl == NULL) {
+        fclose(file);
+        return 1;
+    }
+    free(temp_lvl);
+    fclose(file);
     return 0;
 }

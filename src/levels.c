@@ -10,7 +10,7 @@ int delete_from_levels(FILE *db, int id) {
         fseek(db, i*sizeof(level), SEEK_SET);
         fread(&door, sizeof(level), 1, db);
         if (door.level_number == id) {
-            for (long j = i; j < n - 1; j++) {
+            for (long j = i; j < n; j++) {
                 level door_temp;
                 fseek(db, (j+1)*sizeof(level), SEEK_SET);
                 fread(&door_temp, sizeof(level), 1, db);
@@ -23,6 +23,9 @@ int delete_from_levels(FILE *db, int id) {
     }
     fseek(db, 0, SEEK_SET);
     ftruncate((fileno(db)), (n - count) * sizeof(level));
+    if (count == 0)
+        return 1;
+    return 0;
 }
 
 level *select_from_levels(FILE *db, int id) {
@@ -81,7 +84,17 @@ void print_all_levels(FILE *db, int amount) {
 }
 
 int input_level(level *data) {
+    printf("input data about new level:\n");
+    printf("level amount of cells safety flag\n");
     if (scanf("%d%d%d", &(data->level_number), &(data->cell_amount), &(data->safety_flag)) != 3)
         return 1;
+    FILE *file = fopen("../materials/master_levels.db", "rb");
+    level *temp_lvl = select_from_levels(file, data -> level_number);
+    if (temp_lvl != NULL) {
+        free(temp_lvl);
+        fclose(file);
+        return 1;
+    }
+    fclose(file);
     return 0;
 }
