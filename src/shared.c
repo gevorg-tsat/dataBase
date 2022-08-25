@@ -8,15 +8,15 @@ int selectf(int id, int table, int amount) {
         file = fopen("../materials/master_modules.db", "rb");
         if (id != -1) {
             module *temp = select_from_module(file, id);
-            if (temp == NULL){
+            if (temp == NULL) {
                 fclose(file);
                 return 1;
             }
             print_module(*temp);
             free(temp);
-        }
-        else
+        } else {
             print_all_module(file, amount);
+        }
         fclose(file);
         return 0;
         break;
@@ -24,15 +24,15 @@ int selectf(int id, int table, int amount) {
         file = fopen("../materials/master_levels.db", "rb");
         if (id != -1) {
             level *temp = select_from_levels(file, id);
-            if (temp == NULL){
+            if (temp == NULL) {
                 fclose(file);
                 return 1;
             }
             print_level(*temp);
             free(temp);
-        }
-        else
+        } else {
             print_all_levels(file, amount);
+        }
         fclose(file);
         return 0;
         break;
@@ -40,15 +40,15 @@ int selectf(int id, int table, int amount) {
         file = fopen("../materials/master_status_events.db", "rb");
         if (id != -1) {
             status_events *temp = select_from_events(file, id);
-            if (temp == NULL){
+            if (temp == NULL) {
                 fclose(file);
                 return 1;
             }
             print_event(*temp);
             free(temp);
-        }
-        else
+        } else {
             print_all_events(file, amount);
+        }
         fclose(file);
         return 0;
         break;
@@ -253,7 +253,6 @@ void set_status(int id, int status) {
     strftime(new_event.change_time, 8, "%H:%M:%S", cur_time);
     insert_into_events(file, &new_event);
     fclose(file);
-
 }
 int max_event_id() {
     FILE *file = fopen("../materials/master_status_events.db", "rb+");
@@ -384,8 +383,7 @@ int get_status(module mod) {
             if (id_min == -1) {
                 status = temp.new_status;
                 id_min = temp.module;
-            }
-            else {
+            } else {
                 status_events *temp2 = select_from_events(file_ev, id_min);
                 if (date_compare(temp, *temp2) >= 0) {
                     status = temp.new_status;
@@ -404,7 +402,8 @@ int get_status(module mod) {
 
 int date_compare(status_events first, status_events second) {
     struct date_time date1 = {
-        .year = (first.change_date[6] - '0') * 1000 + (first.change_date[7] - '0') * 100 + (first.change_date[8] - '0') * 10 + (first.change_date[9] - '0') * 1,
+        .year = (first.change_date[6] - '0') * 1000 + (first.change_date[7] - '0') * 100
+            + (first.change_date[8] - '0') * 10 + (first.change_date[9] - '0') * 1,
         .month = (first.change_date[3] - '0') * 10 + (first.change_date[4] - '0'),
         .day = (first.change_date[0] - '0') * 10 + (first.change_date[1] - '0'),
         .hour = (first.change_time[0] - '0') * 10 + (first.change_time[1] - '0'),
@@ -412,7 +411,8 @@ int date_compare(status_events first, status_events second) {
         .second = (first.change_time[6] - '0') * 10 + (first.change_time[7] - '0')
     };
     struct date_time date2 = {
-        .year = (second.change_date[6] - '0') * 1000 + (second.change_date[7] - '0') * 100 + (second.change_date[8] - '0') * 10 + (second.change_date[9] - '0') * 1,
+        .year = (second.change_date[6] - '0') * 1000 + (second.change_date[7] - '0') * 100
+            + (second.change_date[8] - '0') * 10 + (second.change_date[9] - '0') * 1,
         .month = (second.change_date[3] - '0') * 10 + (second.change_date[4] - '0'),
         .day = (second.change_date[0] - '0') * 10 + (second.change_date[1] - '0'),
         .hour = (second.change_time[0] - '0') * 10 + (second.change_time[1] - '0'),

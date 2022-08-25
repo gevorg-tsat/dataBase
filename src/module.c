@@ -40,6 +40,7 @@ module *select_from_module(FILE *db, int id) {
             return temp;
         }
     }
+    free(temp);
     return NULL;
 }
 
@@ -69,7 +70,7 @@ int insert_into_module(FILE *db, module *entity) {
 
 void print_module(module data) {
     printf("%d ", data.id);
-    printf("%s ",data.name);
+    printf("%s ", data.name);
     printf("%d ", data.level_number);
     printf("%d ", data.cell);
     printf("%d\n", data.del);
@@ -91,7 +92,10 @@ void print_all_module(FILE *db, int amount) {
 int input_module(module *data) {
     printf("input data about new module:\n");
     printf("id name level cell delete_flag \n");
-    if (scanf("%d %s %d%d%d", &(data->id), data->name, &(data->level_number), &(data->cell), &(data->del)) != 5)
+    if (scanf("%d", &(data->id)) !=1)
+        return 1;
+    scanf("%s", data->name);
+    if (scanf("%d %d %d", &(data->level_number), &(data->cell), &(data->del)) != 3)
         return 1;
     FILE *file = fopen("../materials/master_modules.db", "rb");
     module *temp = select_from_module(file, data -> id);

@@ -1,3 +1,6 @@
+#ifndef SRC_SHARED_H_
+#define SRC_SHARED_H_
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,3 +33,4 @@ void get_all_active();
 int get_status(module mod);
 int date_compare(status_events first, status_events second);
 
+#endif  // SRC_SHARED_H_

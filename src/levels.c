@@ -18,8 +18,9 @@ int delete_from_levels(FILE *db, int id) {
                 fwrite(&door_temp, sizeof(level), 1, db);
             }
             count++;
+        } else {
+            i++;
         }
-        else i++;
     }
     fseek(db, 0, SEEK_SET);
     ftruncate((fileno(db)), (n - count) * sizeof(level));
