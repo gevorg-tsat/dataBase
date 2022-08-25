@@ -42,11 +42,11 @@ level *select_from_levels(FILE *db, int id) {
 int update_level(FILE *db, int id, level *entity) {
     fseek(db, 0, SEEK_END);
     long int size = ftell(db) / sizeof(level);
-    for (long int i = 0; i < n; i++) {
+    for (long int i = 0; i < size; i++) {
         level temp;
         fseek(db, i*sizeof(level), SEEK_SET);
         fread(&temp, sizeof(level), 1, db);
-        if (temp.id == id) {
+        if (temp.level_number == id) {
             fseek(db, i*sizeof(level), SEEK_SET);
             fwrite(entity, sizeof(level), 1, db);
             return 0;
@@ -60,5 +60,27 @@ int insert_into_levels(FILE *db, level *entity) {
     long int size = ftell(db) / sizeof(level);
     fseek(db, size*sizeof(level), SEEK_SET);
     fwrite(entity, sizeof(level), 1, db);
+    return 0;
+}
+
+void print_level(level temp) {
+    printf("%d %d %d\n", temp.level_number, temp.cell_amount, temp.safety_flag);
+}
+void print_all_levels(FILE *db, int amount) {
+    fseek(db, 0, SEEK_END);
+    level temp;
+    long int size = ftell(db) / sizeof(level);
+    if (amount == -1)
+        amount = size;
+    for (int i = 0; i < size && i < amount; i++) {
+        fseek(db, i * sizeof(level), SEEK_SET);
+        fread(&temp, sizeof(level), 1, db);
+        print_level(temp);
+    }
+}
+
+int input_level(level *data) {
+    if (scanf("%d%d%d", &(data->level_number), &(data->cell_amount), &(data->safety_flag)) != 3)
+        return 1;
     return 0;
 }

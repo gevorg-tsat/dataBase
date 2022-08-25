@@ -10,7 +10,7 @@ int delete_from_modules(FILE *db, int id) {
         module door;
         fseek(db, i*sizeof(module), SEEK_SET);
         fread(&door, sizeof(module), 1, db);
-        if ((door.id == id) {
+        if (door.id == id) {
             for (long j = i; j < n - 1; j++) {
                 module door_temp;
                 fseek(db, (j+1)*sizeof(module), SEEK_SET);
@@ -26,7 +26,7 @@ int delete_from_modules(FILE *db, int id) {
     fseek(db, 0, SEEK_SET);
     ftruncate((fileno(db)), (n - count) * sizeof(module));
 }
-module *select_from_modules(FILE *db, int id) {
+module *select_from_module(FILE *db, int id) {
     fseek(db, 0, SEEK_END);
     long int size = ftell(db) / sizeof(module);
     module *temp = malloc(sizeof(module));
@@ -43,7 +43,7 @@ module *select_from_modules(FILE *db, int id) {
 int update_module(FILE *db, int id, module *entity) {
     fseek(db, 0, SEEK_END);
     long int size = ftell(db) / sizeof(module);
-    for (long int i = 0; i < n; i++) {
+    for (long int i = 0; i < size; i++) {
         module temp;
         fseek(db, i*sizeof(module), SEEK_SET);
         fread(&temp, sizeof(module), 1, db);
@@ -68,13 +68,24 @@ void print_module(module data) {
     printf("%s ",data.name);
     printf("%d ", data.level_number);
     printf("%d ", data.cell);
-    printf("%d", data.del);
+    printf("%d\n", data.del);
 }
 
-void print_all_module(FILE *file, int amount) {
-
+void print_all_module(FILE *db, int amount) {
+    fseek(db, 0, SEEK_END);
+    module temp;
+    long int size = ftell(db) / sizeof(module);
+    if (amount == -1)
+        amount = size;
+    for (int i = 0; i < size && i < amount; i++) {
+        fseek(db, i * sizeof(module), SEEK_SET);
+        fread(&temp, sizeof(module), 1, db);
+        print_module(temp);
+    }
 }
 
 int input_module(module *data) {
-
+    if (scanf("%d %s %d%d%d", &(data->id), &(data->name), &(data->level_number), &(data->level_number), &(data->del)) != 5)
+        return 1;
+    return 0;
 }
