@@ -94,7 +94,7 @@ int input_module(module *data) {
     printf("id name level cell delete_flag \n");
     if (scanf("%d", &(data->id)) !=1)
         return 1;
-    scanf("%s", data->name);
+    scanf("%30s", data->name);
     if (scanf("%d %d %d", &(data->level_number), &(data->cell), &(data->del)) != 3)
         return 1;
     FILE *file = fopen("../materials/master_modules.db", "rb");

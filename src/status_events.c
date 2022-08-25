@@ -87,7 +87,7 @@ int input_event(status_events *event) {
     printf("event_id module_id new_status date_of_change time_of_change\n");
     if (scanf("%d %d %d", &(event->event), &(event->module), &(event->new_status)) != 3)
         return 1;
-    scanf("%s %s", event->change_date, event->change_time);
+    scanf("%11s %9s", event->change_date, event->change_time);
     FILE *file = fopen("../materials/master_modules.db", "rb");
     module *temp = select_from_module(file, event -> module);
     if (temp == NULL)
