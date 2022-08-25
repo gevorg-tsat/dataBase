@@ -6,6 +6,15 @@
 #include "levels.h"
 #include <string.h>
 
+struct date_time {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+};
+int compare(struct date_time door_1, struct date_time door_2);
 int selectf(int id, int table, int amount);
 int update(int table, int id);
 int insert(int table);

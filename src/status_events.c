@@ -31,7 +31,7 @@ status_events *select_from_events(FILE *db, int id) {
     status_events *temp = malloc(sizeof(status_events));
     for (int i = 0; i < size; i++) {
         fseek(db, i * sizeof(status_events), SEEK_SET);
-        fread(&temp, sizeof(status_events), 1, db);
+        fread(temp, sizeof(status_events), 1, db);
         if (temp->event == id) {
             return temp;
         }

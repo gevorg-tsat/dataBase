@@ -31,11 +31,12 @@ level *select_from_levels(FILE *db, int id) {
     level *temp = malloc(sizeof(level));
     for (int i = 0; i < size; i++) {
         fseek(db, i * sizeof(level), SEEK_SET);
-        fread(&temp, sizeof(level), 1, db);
+        fread(temp, sizeof(level), 1, db);
         if (temp->level_number == id) {
             return temp;
         }
     }
+    free(temp);
     return NULL;
 }
 
