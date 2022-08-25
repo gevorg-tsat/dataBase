@@ -4,8 +4,8 @@ typedef struct status_events {
     int event;
     int module;
     int new_status;
-    char[11] change_date;
-    char[9] change_time;
+    char change_date[11];
+    char change_time[9];
 } status_events;
 
 int delete_from_events(FILE *db, int id);

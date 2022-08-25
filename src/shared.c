@@ -1,8 +1,4 @@
-#include "database.h"
-#include "status_events.h"
-#include "module.h"
-#include "levels.h"
-
+#include "shared.h"
 
 
 int select(int id, int table, int amount) {
@@ -179,6 +175,223 @@ void bunt() {
     fseek(file, 0, SEEK_END);
     long int n = ftell(file)/(sizeof(module));
     fseek(file, 0, SEEK_SET);
-    
+    for (int i = 0; i < n; i++) {
+        fseek(file_m, i * sizeof(module), SEEK_SET);
+        module temp;
+        fread(&temp, sizeof(module), 1, file_m);
+        if (get_status(temp) == 1) {
+            set_status(temp.id, 0);
+            temp.del = 1;
+            fseek(file_m, i * sizeof(module), SEEK_SET);
+            fwrite(&temp, sizeof(module), 1, file);
+        }
+    }
+    set_protected_mode(0);
+    move_module(0, 1, 1);
+    set_protect_flag_in_levels(1);
 }
 
+void set_protected_mode(int id) {
+    FILE *file = fopen("../materials/master_status_events.db", "rb+");
+    status_events new_event;
+    new_event.event = max_event_id() + 1;
+    new_event.module = id;
+    new_event.new_status = 0;
+    time_t cur_seconds = time(NULL);
+    struct tm *cur_time = localtime(&cur_seconds);
+    strftime(new_event.date, 11, "%d.%m.%Y", cur_time);
+    strftime(new_event.time, 8, "%H:%M:%S", cur_time);
+    insert_into_events(file, &new_event);
+    new_event.new_status = 1;
+    new_event.event = max_event_id() + 1;
+    cur_seconds = time(NULL);
+    tm *cur_time = localtime(&cur_seconds);
+    strftime(new_event.date, 11, "%d.%m.%Y", cur_time);
+    strftime(new_event.time, 8, "%H:%M:%S", cur_time);
+    insert_into_events(file, &new_event);
+    new_event.new_status = 20;
+    new_event.event = max_event_id() + 1;
+    cur_seconds = time(NULL);
+    tm *cur_time = localtime(&cur_seconds);
+    strftime(new_event.date, 11, "%d.%m.%Y", cur_time);
+    strftime(new_event.time, 8, "%H:%M:%S", cur_time);
+    insert_into_events(file, &new_event);
+    fclose(file);
+}
+
+void set_status(int id, int status) {
+    FILE *file = fopen("../materials/master_status_events.db", "rb+");
+    status_events new_event;
+    new_event.event = max_event_id() + 1;
+    new_event.module = id;
+    new_event.new_status = status;
+    time_t cur_seconds = time(NULL);
+    struct tm *cur_time = localtime(&cur_seconds);
+    strftime(new_event.date, 11, "%d.%m.%Y", cur_time);
+    strftime(new_event.time, 8, "%H:%M:%S", cur_time);
+    insert_into_events(file, &new_event);
+    fclose(file);
+
+}
+int max_event_id() {
+    FILE *file = fopen("../materials/master_status_events.db", "rb+");
+    fseek(file, 0, SEEK_END);
+    long int n = ftell(file)/(sizeof(status_events));
+    fseek(file, 0, SEEK_SET);
+    int max_d = -1;
+    for (int i = 0; i < n; i++) {
+        fseek(file_m, i * sizeof(status_events), SEEK_SET);
+        status_events temp;
+        fread(&temp, sizeof(status_events), 1, file_m);
+        if (temp.event > max_d)
+            max_d = temp.event;
+    }
+    fclose(file);
+    return max_d;
+}
+
+int move_module(int id, int level, int cell) {
+    FILE *file = fopen("../materials/master_module.db", "rb+");
+    fseek(file, 0, SEEK_END);
+    long int n = ftell(file)/(sizeof(module));
+    fseek(file, 0, SEEK_SET);
+    for (int i = 0; i < n; i++) {
+        fseek(file_m, i * sizeof(module), SEEK_SET);
+        module temp;
+        fread(&temp, sizeof(module), 1, file_m);
+        if (temp.id == id) {
+            temp.cell = cell;
+            temp.level_number = level;
+            fseek(file_m, i * sizeof(level), SEEK_SET);
+            fwrite(&temp, sizeof(level), 1, file);
+            fclose(file);
+            return 0;
+        }
+    }
+    fclose(file);
+    return 1;
+}
+
+// int set_protect_flag(int id) {
+//     FILE *file = fopen("../materials/master_module.db", "rb+");
+//     fseek(file, 0, SEEK_END);
+//     long int n = ftell(file)/(sizeof(module));
+//     fseek(file, 0, SEEK_SET);
+//     for (int = 0; i < n; i++) {
+//         fseek(file_m, i * sizeof(module), SEEK_SET);
+//         module temp;
+//         fread(&temp, sizeof(module), 1, file_m);
+//         if (temp.id == id) {
+//             set_protect_mode_in_levels(temp.level_number);
+//             fclose(file);
+//             return 0;
+//         }
+//     }
+//     fclose(file);
+//     return 1;
+// }
+
+int set_protect_flag_in_levels(int lev) {
+    FILE *file = fopen("../materials/master_level.db", "rb+");
+    fseek(file, 0, SEEK_END);
+    long int n = ftell(file)/(sizeof(level));
+    fseek(file, 0, SEEK_SET);
+    for (int i = 0; i < n; i++) {
+        fseek(file, i * sizeof(level), SEEK_SET);
+        level temp;
+        fread(&temp, sizeof(level), 1, file);
+        if (temp.level_number == level) {
+            temp.safety_flag = 1;
+            fseek(file_m, i * sizeof(level), SEEK_SET);
+            fwrite(&temp, sizeof(level), 1, file);
+            fclose(file);
+            return 0;
+        }
+    }
+    fclose(file);
+    return 1;
+}
+int delete_mod_by_id(int id) {
+    FILE *file = fopen("../materials/master_module.db", "rb+");
+    fseek(file, 0, SEEK_END);
+    long int n = ftell(file)/(sizeof(module));
+    fseek(file, 0, SEEK_SET);
+    for (int i = 0; i < n; i++) {
+        fseek(file_m, i * sizeof(module), SEEK_SET);
+        module temp;
+        fread(&temp, sizeof(module), 1, file_m);
+        if (temp.id == id) {
+            temp.del = 1;
+            fseek(file_m, i * sizeof(module), SEEK_SET);
+            fwrite(&temp, sizeof(module), 1, file);
+            fclose(file);
+            return 0;
+        }
+    }
+    fclose(file);
+    return 1;
+}
+
+
+
+void get_all_active() {
+    FILE *file_m = fopen("../materials/master_module.db", "rb+");
+    fseek(file_m, 0, SEEK_END);
+    long int n = ftell(file_m)/(sizeof(module));
+    for (long int i = 0; i < n; i++) {
+        fseek(file_m, i * sizeof(module), SEEK_SET);
+        module temp;
+        fread(&temp, sizeof(module), 1, file_m);
+        if (get_status(temp))
+            print_module(temp);
+    }
+    fclose(file_m);
+}
+
+int get_status(module mod) {
+    FILE *file_ev = fopen("../materials/master_status_events.db", "rb");
+    status_events temp;
+    status_events newest = {.change_date = "00.00.0000", .change_time = "00:00:00", .new_status = 0};
+    fseek(file_ev, 0, SEEK_END);
+    long int m = ftell(file_ev)/(sizeof(status_events));
+    fseek(file_ev, 0, SEEK_SET);
+    fread(&newest, sizeof(status_events), 1, file_ev);
+    for (int i = 0; i < m; i++) {
+        fseek(db, i * sizeof(status_events), SEEK_SET);
+        fread(&temp, sizeof(status_events), 1, db);
+        if (temp.module == mod.id) {
+            if (strcmp(newest.change_date, "00.00.0000") == 0) {
+                newest = temp;
+            }
+            else {
+                if (date_compare(temp, newest) >= 0) {
+                    newest = temp;
+                }
+            }
+        }
+    }
+    fclose(file_ev);
+    return newest.new_status;
+}
+
+int date_compare(status_events first, status_events second) {
+    long int date1 = 0, date2 = 0;
+    date1 += ((first.change_date[6] - '0') * 10000000 + (first.change_date[7] - '0') * 1000000 + (first.change_date[8] - '0') * 100000 + (first.change_date[9] - '0') * 10000);
+    date1 += ((first.change_date[3] - '0') * 1000) + (first.change_date[4] - '0') * 100) + (first.change_date[0] - '0') * 10) + (first.change_date[1] - '0') * 1);
+    date2 += ((second.change_date[6] - '0') * 10000000 + (second.change_date[7] - '0') * 1000000 + (second.change_date[8] - '0') * 100000 + (second.change_date[9] - '0') * 10000);
+    date2 += ((second.change_date[3] - '0') * 1000) + (second.change_date[4] - '0') * 100) + (second.change_date[0] - '0') * 10) + (second.change_date[1] - '0') * 1);
+    if (date1 > date2)
+        return 1;
+    if (date2 > date1)
+        return -1;
+    long int time1 = 0, time2 = 0;
+    time1 = time1 + (first.change_time[0] - '0') * 10 + (first.change_time[1] - '0') * 360 + (first.change_time[3] - '0') * 10 + (first.change_time[4] - '0') * 60 
+        + (first.change_time[6] - '0') * 10 + (first.change_time[7] - '0');
+    time2 = time2 + (second.change_time[0] - '0') * 10 + (second.change_time[1] - '0') * 360 + (second.change_time[3] - '0') * 10 + (second.change_time[4] - '0') * 60 
+        + (second.change_time[6] - '0') * 10 + (second.change_time[7] - '0');
+    if (time1 > time2)
+        return 1;
+    if (time2 > time1)
+        return -1;
+    return 0;
+}
